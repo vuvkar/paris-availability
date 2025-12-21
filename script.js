@@ -1,5 +1,5 @@
 // Configuration
-const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY'; // Get your free key from https://web3forms.com
+const WEB3FORMS_ACCESS_KEY = '56831448-cd53-4aca-8e41-0e87d94e0b2d'; // Get your free key from https://web3forms.com
 
 // State
 let currentDate = new Date();
@@ -206,17 +206,22 @@ document.getElementById('submitForm').addEventListener('submit', async function(
     const formData = {
         access_key: WEB3FORMS_ACCESS_KEY,
         subject: `Paris Stay Booking Request: ${formatDisplayDate(checkInDate)} - ${formatDisplayDate(checkOutDate)}`,
-        from_name: name,
+        name: name,
         email: email,
-        check_in: formatDisplayDate(checkInDate),
-        check_out: formatDisplayDate(checkOutDate),
-        nights: `${nights} night${nights > 1 ? 's' : ''}`,
-        guests: guests,
-        message: message || 'No message provided',
-        booking_summary: `${name} wants to book from ${formatDisplayDate(checkInDate)} to ${formatDisplayDate(checkOutDate)} (${nights} night${nights > 1 ? 's' : ''}) for ${guests} guest${guests > 1 ? 's' : ''}.`
+        message: `
+Booking Details:
+━━━━━━━━━━━━━━━━
+Check-in: ${formatDisplayDate(checkInDate)}
+Check-out: ${formatDisplayDate(checkOutDate)}
+Duration: ${nights} night${nights > 1 ? 's' : ''}
+Number of Guests: ${guests}
+
+${message ? 'Guest Message:\n' + message : 'No additional message.'}
+        `.trim()
     };
     
     try {
+        console.log('Submitting booking request...', formData);
         const response = await fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             headers: {
@@ -227,6 +232,7 @@ document.getElementById('submitForm').addEventListener('submit', async function(
         });
         
         const result = await response.json();
+        console.log('Web3Forms response:', result);
         
         if (result.success) {
             alert('🎉 Booking request sent successfully! We will contact you at ' + email + ' shortly.');
@@ -238,11 +244,12 @@ document.getElementById('submitForm').addEventListener('submit', async function(
             updateFormVisibility();
             renderCalendar();
         } else {
-            alert('❌ Failed to send booking request. Please try again or contact us directly.');
+            console.error('Web3Forms error:', result);
+            alert('❌ Failed to send booking request: ' + (result.message || 'Unknown error') + '\n\nPlease try again or contact us directly.');
         }
     } catch (error) {
         console.error('Error submitting form:', error);
-        alert('❌ Failed to send booking request. Please check your internet connection and try again.');
+        alert('❌ Failed to send booking request. Error: ' + error.message + '\n\nPlease check your internet connection and try again.');
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = originalBtnText;
