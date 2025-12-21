@@ -26,6 +26,35 @@ header {
     margin-bottom: 40px;
 }
 
+.language-switcher {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.lang-btn {
+    padding: 8px 16px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.lang-btn:hover {
+    border-color: #667eea;
+    background: #f5f7ff;
+}
+
+.lang-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
 h1 {
     font-size: 2.5rem;
     color: #667eea;

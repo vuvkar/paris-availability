@@ -6,6 +6,71 @@ let currentDate = new Date();
 let checkInDate = null;
 let checkOutDate = null;
 let unavailableDates = [];
+let currentLang = 'hy'; // Default language: Armenian
+
+// Translations
+const translations = {
+    en: {
+        checkIn: 'Check-in:',
+        checkOut: 'Check-out:',
+        duration: 'Duration:',
+        nights: 'night',
+        nightsPlural: 'nights',
+        sending: 'Sending...',
+        submitBtn: 'Submit Booking Request',
+        successMsg: '🎉 Booking request sent successfully! We will contact you at',
+        successMsgEnd: 'shortly.',
+        errorMsg: '❌ Failed to send booking request:',
+        errorMsgEnd: '\n\nPlease try again or contact us directly.',
+        networkError: '❌ Failed to send booking request. Error:',
+        networkErrorEnd: '\n\nPlease check your internet connection and try again.',
+        unavailableAlert: 'Some dates in your selected range are unavailable. Please select different dates.',
+        dayHeaders: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    },
+    hy: {
+        checkIn: 'Ժամանում:',
+        checkOut: 'Մեկնում:',
+        duration: 'Տևողություն:',
+        nights: 'գիշեր',
+        nightsPlural: 'գիշեր',
+        sending: 'Ուղարկվում է...',
+        submitBtn: 'Ուղարկել Ամրագրման Հայտը',
+        successMsg: '🎉 Ամրագրման հայտը հաջողությամբ ուղարկվել է։ Մենք կկապվենք ձեզ հետ',
+        successMsgEnd: 'հասցեով։',
+        errorMsg: '❌ Չհաջողվեց ուղարկել ամրագրման հայտը:',
+        errorMsgEnd: '\n\nԽնդրում ենք փորձել կրկին կամ կապվել մեզ հետ ուղղակիորեն։',
+        networkError: '❌ Չհաջողվեց ուղարկել ամրագրման հայտը։ Սխալ:',
+        networkErrorEnd: '\n\nԽնդրում ենք ստուգել ձեր ինտերնետ կապը և փորձել կրկին։',
+        unavailableAlert: 'Ձեր ընտրված ամսաթվերից մի քանիսը զբաղված են։ Խնդրում ենք ընտրել այլ ամսաթվեր։',
+        dayHeaders: ['Կիր', 'Երկ', 'Երք', 'Չոր', 'Հնգ', 'Ուր', 'Շաբ'],
+        months: ['Հունվար', 'Փետրվար', 'Մարտ', 'Ապրիլ', 'Մայիս', 'Հունիս', 'Հուլիս', 'Օգոստոս', 'Սեպտեմբեր', 'Հոկտեմբեր', 'Նոյեմբեր', 'Դեկտեմբեր']
+    }
+};
+
+// Get current translation
+const t = (key) => translations[currentLang][key];
+
+// Switch language
+function switchLanguage(lang) {
+    currentLang = lang;
+    
+    // Update HTML lang attribute
+    document.documentElement.lang = lang === 'hy' ? 'hy' : 'en';
+    
+    // Update all elements with data-en and data-hy attributes
+    document.querySelectorAll('[data-en][data-hy]').forEach(element => {
+        element.textContent = lang === 'hy' ? element.getAttribute('data-hy') : element.getAttribute('data-en');
+    });
+    
+    // Update language buttons
+    document.getElementById('langAm').classList.toggle('active', lang === 'hy');
+    document.getElementById('langEn').classList.toggle('active', lang === 'en');
+    
+    // Re-render calendar with new language
+    renderCalendar();
+    updateFormVisibility();
+}
 
 // Load unavailable dates from JSON file
 async function loadUnavailableDates() {
@@ -29,12 +94,10 @@ function formatDate(date) {
 
 // Format date for display
 function formatDisplayDate(date) {
-    return date.toLocaleDateString('en-US', { 
-        weekday: 'short', 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-    });
+    const day = date.getDate();
+    const month = t('months')[date.getMonth()];
+    const year = date.getFullYear();
+    return `${month} ${day}, ${year}`;
 }
 
 // Check if date is unavailable
@@ -67,11 +130,11 @@ function renderCalendar() {
     const month = currentDate.getMonth();
     
     // Update month/year display
-    document.getElementById('monthYear').textContent = 
-        currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const monthName = t('months')[month];
+    document.getElementById('monthYear').textContent = `${monthName} ${year}`;
     
     // Add day headers
-    const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayHeaders = t('dayHeaders');
     dayHeaders.forEach(day => {
         const dayHeader = document.createElement('div');
         dayHeader.className = 'calendar-day header';
@@ -145,7 +208,7 @@ function selectDate(date) {
         const hasUnavailable = datesInRange.some(d => isDateUnavailable(d));
         
         if (hasUnavailable) {
-            alert('Some dates in your selected range are unavailable. Please select different dates.');
+            alert(t('unavailableAlert'));
             checkInDate = null;
             checkOutDate = null;
         }
@@ -176,10 +239,11 @@ function updateFormVisibility() {
     if (checkInDate && checkOutDate) {
         form.classList.add('visible');
         const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+        const nightsText = nights === 1 ? t('nights') : t('nightsPlural');
         selectedDatesDiv.innerHTML = `
-            <strong>Check-in:</strong> ${formatDisplayDate(checkInDate)}<br>
-            <strong>Check-out:</strong> ${formatDisplayDate(checkOutDate)}<br>
-            <strong>Duration:</strong> ${nights} night${nights > 1 ? 's' : ''}
+            <strong>${t('checkIn')}</strong> ${formatDisplayDate(checkInDate)}<br>
+            <strong>${t('checkOut')}</strong> ${formatDisplayDate(checkOutDate)}<br>
+            <strong>${t('duration')}</strong> ${nights} ${nightsText}
         `;
     } else {
         form.classList.remove('visible');
@@ -193,7 +257,7 @@ document.getElementById('submitForm').addEventListener('submit', async function(
     const submitBtn = document.querySelector('.submit-btn');
     const originalBtnText = submitBtn.textContent;
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
+    submitBtn.textContent = t('sending');
     
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
@@ -235,7 +299,7 @@ ${message ? 'Guest Message:\n' + message : 'No additional message.'}
         console.log('Web3Forms response:', result);
         
         if (result.success) {
-            alert('🎉 Booking request sent successfully! We will contact you at ' + email + ' shortly.');
+            alert(`${t('successMsg')} ${email} ${t('successMsgEnd')}`);
             
             // Reset form
             checkInDate = null;
@@ -245,11 +309,11 @@ ${message ? 'Guest Message:\n' + message : 'No additional message.'}
             renderCalendar();
         } else {
             console.error('Web3Forms error:', result);
-            alert('❌ Failed to send booking request: ' + (result.message || 'Unknown error') + '\n\nPlease try again or contact us directly.');
+            alert(`${t('errorMsg')} ${result.message || 'Unknown error'}${t('errorMsgEnd')}`);
         }
     } catch (error) {
         console.error('Error submitting form:', error);
-        alert('❌ Failed to send booking request. Error: ' + error.message + '\n\nPlease check your internet connection and try again.');
+        alert(`${t('networkError')} ${error.message}${t('networkErrorEnd')}`);
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = originalBtnText;
@@ -265,6 +329,15 @@ document.getElementById('prevMonth').addEventListener('click', () => {
 document.getElementById('nextMonth').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
     renderCalendar();
+});
+
+// Language switcher buttons
+document.getElementById('langAm').addEventListener('click', () => {
+    switchLanguage('hy');
+});
+
+document.getElementById('langEn').addEventListener('click', () => {
+    switchLanguage('en');
 });
 
 // Initialize
