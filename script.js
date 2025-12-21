@@ -1,5 +1,5 @@
 // Configuration
-const BOOKING_EMAIL = 'your-email@example.com'; // Replace with your email address
+const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY'; // Get your free key from https://web3forms.com
 
 // State
 let currentDate = new Date();
@@ -187,8 +187,13 @@ function updateFormVisibility() {
 }
 
 // Handle form submission
-document.getElementById('submitForm').addEventListener('submit', function(e) {
+document.getElementById('submitForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    
+    const submitBtn = document.querySelector('.submit-btn');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
     
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
@@ -197,43 +202,51 @@ document.getElementById('submitForm').addEventListener('submit', function(e) {
     
     const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
     
-    // Create email subject and body
-    const subject = `Booking Request: ${formatDisplayDate(checkInDate)} - ${formatDisplayDate(checkOutDate)}`;
-    const body = `
-Hello,
-
-I would like to request a booking at your Paris place:
-
-Check-in Date: ${formatDisplayDate(checkInDate)}
-Check-out Date: ${formatDisplayDate(checkOutDate)}
-Duration: ${nights} night${nights > 1 ? 's' : ''}
-
-Name: ${name}
-Email: ${email}
-Number of Guests: ${guests}
-
-${message ? `Message:\n${message}\n\n` : ''}
-Best regards,
-${name}
-    `.trim();
+    // Prepare form data for Web3Forms
+    const formData = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: `Paris Stay Booking Request: ${formatDisplayDate(checkInDate)} - ${formatDisplayDate(checkOutDate)}`,
+        from_name: name,
+        email: email,
+        check_in: formatDisplayDate(checkInDate),
+        check_out: formatDisplayDate(checkOutDate),
+        nights: `${nights} night${nights > 1 ? 's' : ''}`,
+        guests: guests,
+        message: message || 'No message provided',
+        booking_summary: `${name} wants to book from ${formatDisplayDate(checkInDate)} to ${formatDisplayDate(checkOutDate)} (${nights} night${nights > 1 ? 's' : ''}) for ${guests} guest${guests > 1 ? 's' : ''}.`
+    };
     
-    // Create mailto URL
-    const mailtoUrl = `mailto:${BOOKING_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    // Open email client
-    window.location.href = mailtoUrl;
-    
-    // Show success message and reset form
-    alert('Your email client will open with the booking request. Please send the email to complete your booking request.');
-    
-    // Reset form after a short delay
-    setTimeout(() => {
-        checkInDate = null;
-        checkOutDate = null;
-        document.getElementById('submitForm').reset();
-        updateFormVisibility();
-        renderCalendar();
-    }, 500);
+    try {
+        const response = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('🎉 Booking request sent successfully! We will contact you at ' + email + ' shortly.');
+            
+            // Reset form
+            checkInDate = null;
+            checkOutDate = null;
+            document.getElementById('submitForm').reset();
+            updateFormVisibility();
+            renderCalendar();
+        } else {
+            alert('❌ Failed to send booking request. Please try again or contact us directly.');
+        }
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('❌ Failed to send booking request. Please check your internet connection and try again.');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+    }
 });
 
 // Navigation buttons

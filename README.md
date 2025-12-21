@@ -8,8 +8,9 @@ A simple and clean GitHub Pages website for managing stay bookings at your Paris
 - **Check-in/check-out date picker** for multi-day stays
 - **Visual availability indicators** (available, unavailable, selected)
 - **Booking form** collecting name, email, number of guests, and message
-- **Email submission** - opens user's email client with pre-filled booking details
+- **Web3Forms integration** - sends booking requests directly to your email (no account needed for users)
 - **Easy management** via a simple JSON file
+- **Free and unlimited** submissions
 
 ## 🚀 Setup Instructions
 
@@ -21,15 +22,22 @@ A simple and clean GitHub Pages website for managing stay bookings at your Paris
 4. Choose **main** branch and **/ (root)** folder
 5. Click **Save**
 
-### 2. Update Configuration
+### 2. Get Web3Forms Access Key
 
-Edit `script.js` and replace your email address at the top of the file:
+1. Go to [https://web3forms.com](https://web3forms.com)
+2. Enter your email address (where you want to receive booking requests)
+3. Click "Get Started" - they'll send you a free access key
+4. Check your email and copy the access key
+
+### 3. Update Configuration
+
+Edit `script.js` and replace the access key at the top of the file:
 
 ```javascript
-const BOOKING_EMAIL = 'vuvkar@gmail.com'; // Replace with your email address
+const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY'; // Paste your key here
 ```
 
-### 3. Manage Unavailable Dates
+### 4. Manage Unavailable Dates
 
 Edit `bookings.json` to add or remove unavailable dates:
 
@@ -47,7 +55,7 @@ Edit `bookings.json` to add or remove unavailable dates:
 - Add dates that are already booked or unavailable
 - Commit and push changes to update the calendar
 
-### 4. Access Your Website
+### 5. Access Your Website
 
 Your website will be available at:
 ```
@@ -58,9 +66,9 @@ https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/
 
 1. **Visitors** select check-in and check-out dates on the calendar
 2. They fill out the booking form with their details
-3. Upon submission, their **email client opens** with a pre-filled email containing all booking details
-4. They send the email to you
-5. You review the request and respond to confirm or decline
+3. Upon submission, the form is **sent directly via Web3Forms** (no account needed!)
+4. You receive an **email** with all booking details
+5. You review the request and respond to the guest via email to confirm or decline
 6. Once confirmed, add those dates to `bookings.json` to mark them as unavailable
 
 ## 🔧 Managing Bookings
@@ -98,9 +106,23 @@ The calendar is fully responsive and works great on mobile devices.
 ## 🐛 Troubleshooting
 
 - **Calendar not showing unavailable dates**: Check that `bookings.json` is properly formatted and dates are in `YYYY-MM-DD` format
-- **Email client not opening**: Make sure you've updated `BOOKING_EMAIL` in `script.js` with your actual email address
+- **Forms not submitting**: Make sure you've added your Web3Forms access key in `script.js`
+- **Not receiving emails**: Check your spam folder, or verify your Web3Forms access key is correct
 - **Website not loading**: Check GitHub Pages settings and ensure the site is deployed from the correct branch
-- **Email not pre-filling properly**: Some email clients may have character limits for mailto links. Users can manually copy/paste the information if needed.
+
+## ❓ FAQ
+
+**Q: Is Web3Forms really free?**  
+A: Yes! Web3Forms is completely free with unlimited submissions.
+
+**Q: Do users need to create an account?**  
+A: No! Users can submit booking requests without any account.
+
+**Q: Where do I get the Web3Forms access key?**  
+A: Visit [web3forms.com](https://web3forms.com), enter your email, and they'll send you a free key instantly.
+
+**Q: Can I change where booking emails are sent?**  
+A: Yes, just create a new access key with Web3Forms using a different email address.
 
 ## 📄 License
 
