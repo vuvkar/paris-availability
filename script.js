@@ -1,6 +1,5 @@
 // Configuration
-const REPO_OWNER = 'vuvkar'; // Replace with your GitHub username
-const REPO_NAME = 'paris-availability'; // Replace with your repository name
+const BOOKING_EMAIL = 'your-email@example.com'; // Replace with your email address
 
 // State
 let currentDate = new Date();
@@ -198,41 +197,43 @@ document.getElementById('submitForm').addEventListener('submit', function(e) {
     
     const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
     
-    // Create GitHub issue content
-    const issueTitle = `Booking Request: ${formatDisplayDate(checkInDate)} - ${formatDisplayDate(checkOutDate)}`;
-    const issueBody = `
-## Booking Request
+    // Create email subject and body
+    const subject = `Booking Request: ${formatDisplayDate(checkInDate)} - ${formatDisplayDate(checkOutDate)}`;
+    const body = `
+Hello,
 
-**Check-in Date:** ${formatDisplayDate(checkInDate)}
-**Check-out Date:** ${formatDisplayDate(checkOutDate)}
-**Duration:** ${nights} night${nights > 1 ? 's' : ''}
+I would like to request a booking at your Paris place:
 
-**Name:** ${name}
-**Email:** ${email}
-**Number of Guests:** ${guests}
+Check-in Date: ${formatDisplayDate(checkInDate)}
+Check-out Date: ${formatDisplayDate(checkOutDate)}
+Duration: ${nights} night${nights > 1 ? 's' : ''}
 
-${message ? `**Message:**\n${message}` : ''}
+Name: ${name}
+Email: ${email}
+Number of Guests: ${guests}
 
----
-*Submitted via Paris Stay Booking Calendar*
+${message ? `Message:\n${message}\n\n` : ''}
+Best regards,
+${name}
     `.trim();
     
-    // Create GitHub issue URL
-    const githubIssueUrl = `https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=booking`;
+    // Create mailto URL
+    const mailtoUrl = `mailto:${BOOKING_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     
-    // Open GitHub issue creation page
-    window.open(githubIssueUrl, '_blank');
+    // Open email client
+    window.location.href = mailtoUrl;
     
-    // Reset form
+    // Show success message and reset form
+    alert('Your email client will open with the booking request. Please send the email to complete your booking request.');
+    
+    // Reset form after a short delay
     setTimeout(() => {
-        if (confirm('Booking request submitted! Would you like to make another booking?')) {
-            checkInDate = null;
-            checkOutDate = null;
-            document.getElementById('submitForm').reset();
-            updateFormVisibility();
-            renderCalendar();
-        }
-    }, 1000);
+        checkInDate = null;
+        checkOutDate = null;
+        document.getElementById('submitForm').reset();
+        updateFormVisibility();
+        renderCalendar();
+    }, 500);
 });
 
 // Navigation buttons

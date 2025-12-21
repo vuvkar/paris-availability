@@ -8,7 +8,7 @@ A simple and clean GitHub Pages website for managing stay bookings at your Paris
 - **Check-in/check-out date picker** for multi-day stays
 - **Visual availability indicators** (available, unavailable, selected)
 - **Booking form** collecting name, email, number of guests, and message
-- **GitHub Issues integration** for booking request submissions
+- **Email submission** - opens user's email client with pre-filled booking details
 - **Easy management** via a simple JSON file
 
 ## 🚀 Setup Instructions
@@ -23,11 +23,10 @@ A simple and clean GitHub Pages website for managing stay bookings at your Paris
 
 ### 2. Update Configuration
 
-Edit `script.js` and replace the following variables at the top of the file:
+Edit `script.js` and replace your email address at the top of the file:
 
 ```javascript
-const REPO_OWNER = 'YOUR_GITHUB_USERNAME'; // Replace with your GitHub username
-const REPO_NAME = 'YOUR_REPO_NAME'; // Replace with your repository name (e.g., 'paris-availability')
+const BOOKING_EMAIL = 'vuvkar@gmail.com'; // Replace with your email address
 ```
 
 ### 3. Manage Unavailable Dates
@@ -59,9 +58,10 @@ https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/
 
 1. **Visitors** select check-in and check-out dates on the calendar
 2. They fill out the booking form with their details
-3. Upon submission, a **GitHub Issue** is created automatically with all booking details
-4. You review the issue and respond to confirm or decline
-5. Once confirmed, add those dates to `bookings.json` to mark them as unavailable
+3. Upon submission, their **email client opens** with a pre-filled email containing all booking details
+4. They send the email to you
+5. You review the request and respond to confirm or decline
+6. Once confirmed, add those dates to `bookings.json` to mark them as unavailable
 
 ## 🔧 Managing Bookings
 
@@ -74,11 +74,11 @@ https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/
 
 ### Processing Booking Requests
 
-1. Go to your repository's **Issues** tab
-2. Review new booking requests (they'll have the "booking" label)
-3. Respond to the guest via email or issue comments
+1. Check your email inbox for new booking requests
+2. Review the booking details (dates, guest info, message)
+3. Reply to the guest to confirm or decline
 4. If confirmed, add the dates to `bookings.json`
-5. Close the issue
+5. Commit and push the changes to update the calendar
 
 ## 🎨 Customization
 
@@ -98,8 +98,9 @@ The calendar is fully responsive and works great on mobile devices.
 ## 🐛 Troubleshooting
 
 - **Calendar not showing unavailable dates**: Check that `bookings.json` is properly formatted and dates are in `YYYY-MM-DD` format
-- **GitHub Issues not opening**: Make sure you've updated `REPO_OWNER` and `REPO_NAME` in `script.js`
+- **Email client not opening**: Make sure you've updated `BOOKING_EMAIL` in `script.js` with your actual email address
 - **Website not loading**: Check GitHub Pages settings and ensure the site is deployed from the correct branch
+- **Email not pre-filling properly**: Some email clients may have character limits for mailto links. Users can manually copy/paste the information if needed.
 
 ## 📄 License
 
