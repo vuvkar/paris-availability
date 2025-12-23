@@ -248,6 +248,14 @@ h1 {
     border-color: #667eea;
 }
 
+.form-group .hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+}
+
 .submit-btn {
     width: 100%;
     padding: 15px;

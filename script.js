@@ -262,6 +262,7 @@ document.getElementById('submitForm').addEventListener('submit', async function(
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const guests = document.getElementById('guests').value;
+    const songs = document.getElementById('songs').value;
     const message = document.getElementById('message').value;
     
     const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
@@ -280,6 +281,7 @@ Check-out: ${formatDisplayDate(checkOutDate)}
 Duration: ${nights} night${nights > 1 ? 's' : ''}
 Number of Guests: ${guests}
 
+${songs ? 'Songs NOT to sing:\n' + songs + '\n' : ''}
 ${message ? 'Guest Message:\n' + message : 'No additional message.'}
         `.trim()
     };
